@@ -4,29 +4,25 @@ import org.apache.tika.langdetect.OptimaizeLangDetector;
 import org.apache.tika.language.detect.LanguageDetector;
 import org.apache.uima.jcas.JCas;
 
-import Cheiron.Processor.Processor_ImplBase;
+import Cheiron.Processor.Processor;
 
-public class Langdetector extends Processor_ImplBase {
+public class Langdetector extends Processor {
 
-	private static LanguageDetector detector = null;
+	private LanguageDetector detector = null;
 
 	@Override
-	public void processView(JCas view) {
+	protected void processView(JCas view) throws Exception {
 		String lang = detector.detect(view.getDocumentText()).getLanguage();
 		view.setDocumentLanguage(lang);
 
-		System.out.println("Tika.Langdetector: " + view.getDocumentText() + "/" + lang);
+		System.out.println("Tika.Langdetector: " + view.getView("_InitialView").getSofaDataURI() + "/" + lang);
 	}
 
 	@Override
-	public void loadDetector(String lang) {
+	protected void loadDetector(String lang) throws Exception {
 		if (detector != null)
 			return;
 
-		try {
-			detector = new OptimaizeLangDetector().loadModels();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		detector = new OptimaizeLangDetector().loadModels();
 	}
 }
